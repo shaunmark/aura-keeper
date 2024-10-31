@@ -4,16 +4,29 @@ import { useEffect, useState } from 'react';
 import { auraService } from '@/services/aura.service';
 import type { AuraWithUser } from '@/services/aura.service';
 import Link from 'next/link';
+import { useFirebase } from '@/context/FirebaseContext';
 
 export default function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<AuraWithUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useFirebase();
+  const [userRank, setUserRank] = useState<number | null>(null);
+  const [userAura, setUserAura] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         const data = await auraService.getAllAurasWithUsernames();
         setLeaderboardData(data);
+        
+        // Find current user's rank and aura
+        if (user) {
+          const userIndex = data.findIndex(entry => entry.uid === user.uid);
+          if (userIndex !== -1) {
+            setUserRank(userIndex + 1);
+            setUserAura(data[userIndex].aura);
+          }
+        }
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
       } finally {
@@ -22,7 +35,7 @@ export default function Leaderboard() {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (
@@ -35,6 +48,35 @@ export default function Leaderboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Current User Stats */}
+        {user && userRank !== null && userAura !== null && (
+          <div className="mb-8 bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="px-6 py-4 bg-indigo-50 border-b border-indigo-100">
+              <h2 className="text-lg font-semibold text-indigo-900">Your Position</h2>
+            </div>
+            <div className="px-6 py-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-sm text-gray-500">Rank</div>
+                  <div className="text-2xl font-bold text-indigo-600">#{userRank}</div>
+                </div>
+                <div className="text-center border-l border-r border-gray-200">
+                  <div className="text-sm text-gray-500">Your Aura</div>
+                  <div className="text-2xl font-bold text-indigo-600">{userAura}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-gray-500">To Next Rank</div>
+                  <div className="text-2xl font-bold text-indigo-600">
+                    {userRank > 1 
+                      ? leaderboardData[userRank - 2].aura - userAura 
+                      : '–'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900">Aura Leaderboard</h1>
@@ -91,7 +133,7 @@ export default function Leaderboard() {
           )}
         </div>
 
-        {/* Rest of Leaderboard */}
+        {/* Complete Leaderboard List */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
             <div className="grid grid-cols-12 text-sm font-medium text-gray-500">
@@ -102,29 +144,54 @@ export default function Leaderboard() {
           </div>
           
           <div className="divide-y divide-gray-200">
-            {leaderboardData.slice(3).map((entry, index) => (
-              <div 
-                key={entry.uid}
-                className="px-4 py-3 grid grid-cols-12 items-center hover:bg-gray-50 transition-colors"
-              >
-                <div className="col-span-2 text-sm text-gray-500">
-                  #{index + 4}
-                </div>
-                <div className="col-span-6">
-                  <div className="text-sm font-medium text-gray-900">
-                    {entry.username}
+            {leaderboardData.map((entry, index) => {
+              const isCurrentUser = entry.uid === user?.uid;
+              return (
+                <div 
+                  key={entry.uid}
+                  className={`px-4 py-3 grid grid-cols-12 items-center transition-colors ${
+                    isCurrentUser 
+                      ? 'bg-indigo-50 hover:bg-indigo-100' 
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="col-span-2 text-sm">
+                    <span className={`font-medium ${
+                      isCurrentUser ? 'text-indigo-600' : 'text-gray-500'
+                    }`}>
+                      #{index + 1}
+                    </span>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Updated {new Date(entry.lastUpdated).toLocaleDateString()}
+                  <div className="col-span-6">
+                    <Link 
+                      href={`/user/${entry.uid}`}
+                      className="block hover:opacity-75 transition-opacity"
+                    >
+                      <div className={`text-sm font-medium ${
+                        isCurrentUser ? 'text-indigo-900' : 'text-gray-900'
+                      }`}>
+                        {entry.username}
+                        {isCurrentUser && (
+                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                            You
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Updated {new Date(entry.lastUpdated).toLocaleDateString()}
+                      </div>
+                    </Link>
+                  </div>
+                  <div className="col-span-4 text-right">
+                    <span className={`text-lg font-semibold ${
+                      isCurrentUser ? 'text-indigo-600' : 'text-gray-900'
+                    }`}>
+                      {entry.aura}
+                    </span>
                   </div>
                 </div>
-                <div className="col-span-4 text-right">
-                  <span className="text-lg font-semibold text-indigo-600">
-                    {entry.aura}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

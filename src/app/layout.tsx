@@ -1,6 +1,7 @@
-import { FirebaseProvider } from '@/context/FirebaseContext'
 import './globals.css'
 import { Inter } from 'next/font/google'
+import { FirebaseProvider } from '@/context/FirebaseContext'
+import AdminButton from '@/components/AdminButton'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,9 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-gray-50 min-h-screen`}>
-      <FirebaseProvider>
-        {children}
-      </FirebaseProvider>
+        <FirebaseProvider>
+          {children}
+          <AdminButton />
+        </FirebaseProvider>
       </body>
     </html>
   )

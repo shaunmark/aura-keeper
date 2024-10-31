@@ -3,7 +3,6 @@ import { useFirebase } from '@/context/FirebaseContext';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { userService } from '@/services/user.service';
-import type { UserProfile } from '@/services/user.service';
 
 export default function Auth() {
   const { auth } = useFirebase();
@@ -42,19 +41,16 @@ export default function Auth() {
 
   const handleSuccessfulLogin = async (result: any) => {
     try {
-      const { user } = result;
-      console.log('Logged in user:', user);
-
       // Check if user profile exists
-      const existingProfile = await userService.getProfile(user.uid);
+      const existingProfile = await userService.getProfile(result.user.uid);
       
       if (!existingProfile) {
         // If no profile exists, redirect to username setup
         router.push('/setup-username');
       } else {
-        // If profile exists, update last login and go to dashboard
-        await userService.updateLastLogin(user.uid);
-        router.push('/dashboard');
+        // If profile exists, update last login and go to leaderboard
+        await userService.updateLastLogin(result.user.uid);
+        router.push('/leaderboard');
       }
     } catch (error) {
       console.error('Error handling login:', error);

@@ -1,4 +1,15 @@
-import { doc, getDoc, setDoc, increment, collection, getDocs, query, orderBy, DocumentData } from 'firebase/firestore';
+import { 
+  doc, 
+  getDoc, 
+  setDoc, 
+  increment, 
+  collection, 
+  getDocs, 
+  query, 
+  orderBy,
+  arrayUnion,
+  updateDoc
+} from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { userService } from './user.service';
 
@@ -61,51 +72,27 @@ export const auraService = {
       const auraRef = doc(db, AURA_COLLECTION, uid);
       const now = new Date().toISOString();
 
-      await setDoc(auraRef, {
+      // Create the new history entry
+      const historyEntry = {
+        timestamp: now,
+        change,
+        reason
+      };
+
+      // Update the document with new aura value and append to history
+      await updateDoc(auraRef, {
         aura: increment(change),
         lastUpdated: now,
-        history: [{
-          timestamp: now,
-          change,
-          reason
-        }]
-      }, { merge: true });
+        history: arrayUnion(historyEntry)
+      });
     } catch (error) {
       console.error('Error updating aura:', error);
       throw error;
     }
   },
 
-  async getAuraHistory(uid: string): Promise<AuraRecord['history'] | null> {
-    try {
-      const auraDoc = await this.getAura(uid);
-      return auraDoc?.history || null;
-    } catch (error) {
-      console.error('Error getting aura history:', error);
-      return null;
-    }
-  },
-
-  async getAllAuras(): Promise<AuraRecord[]> {
-    try {
-      const auraRef = collection(db, AURA_COLLECTION);
-      const q = query(auraRef, orderBy('aura', 'desc'));
-      const querySnapshot = await getDocs(q);
-      
-      const auras: AuraRecord[] = querySnapshot.docs.map(doc => {
-        return doc.data() as AuraRecord;
-      });
-      
-      return auras;
-    } catch (error) {
-      console.error('Error getting all auras:', error);
-      return [];
-    }
-  },
-
   async getAllAurasWithUsernames(): Promise<AuraWithUser[]> {
     try {
-      // Get all auras
       const auraRef = collection(db, AURA_COLLECTION);
       const q = query(auraRef, orderBy('aura', 'desc'));
       const auraSnapshot = await getDocs(q);
@@ -130,4 +117,4 @@ export const auraService = {
   }
 };
 
-export type { AuraRecord, AuraWithUser }; 
+export type { AuraRecord, AuraWithUser };

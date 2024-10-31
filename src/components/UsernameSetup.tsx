@@ -33,7 +33,7 @@ export default function UsernameSetup() {
       };
 
       await userService.createProfile(userData);
-      router.push('/dashboard');
+      router.push('/leaderboard');
     } catch (error) {
       console.error('Error saving username:', error);
       setError('Failed to save username. Please try again.');
