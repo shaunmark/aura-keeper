@@ -8,6 +8,7 @@ import type { UserProfile } from '@/services/user.service';
 import type { AuraWithUser } from '@/services/aura.service';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import Autocomplete from '@/components/Autocomplete';
 
 export default function AdminConsole() {
   const { user } = useFirebase();
@@ -42,7 +43,6 @@ export default function AdminConsole() {
     fetchUsers();
   }, []);
 
-  // Filter users based on search query
   const filteredUsers = useMemo(() => {
     return users.filter(user => 
       user.username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -73,97 +73,61 @@ export default function AdminConsole() {
     router.back();
   };
 
-  const handleAuraIncrement = (value: number) => {
-    setAuraChange(prev => prev + value);
-  };
-
   if (loading) {
     return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Aura Management Console</h2>
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-indigo-100">
+            <h2 className="text-2xl font-bold text-gray-900">Aura Management</h2>
+            <p className="mt-1 text-sm text-gray-600">Modify user aura points and track changes</p>
           </div>
 
-          <form onSubmit={handleAuraUpdate} className="p-6 space-y-6">
+          <form onSubmit={handleAuraUpdate} className="p-6 space-y-8">
+            {/* Updated User Selection Section */}
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Search and Select User
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
-                  placeholder="Search users..."
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-500"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                )}
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium text-gray-700">
+                  Select User
+                </label>
+                <span className="text-xs text-gray-500">
+                  {filteredUsers.length} users found
+                </span>
               </div>
               
-              <div className="mt-1 max-h-60 overflow-auto border border-gray-200 rounded-md">
-                {filteredUsers.map((user) => (
-                  <div
-                    key={user.uid}
-                    className={`px-4 py-2 cursor-pointer hover:bg-gray-50 ${
-                      selectedUser === user.uid ? 'bg-indigo-50' : ''
-                    }`}
-                    onClick={() => setSelectedUser(user.uid)}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{user.username}</span>
-                      <span className="text-gray-500">{user.aura}</span>
-                    </div>
-                  </div>
-                ))}
-                {filteredUsers.length === 0 && (
-                  <div className="px-4 py-2 text-gray-500">
-                    No users found
-                  </div>
-                )}
-              </div>
+              <Autocomplete
+                items={filteredUsers}
+                selectedItem={selectedUser}
+                onSelect={(user) => setSelectedUser(user.uid)}
+                onSearch={(query) => setSearchQuery(query)}
+              />
             </div>
 
+            {/* Aura Controls */}
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700">
                 Aura Change
               </label>
-              
               <div className="flex justify-center items-center h-16 text-3xl font-bold text-indigo-600 bg-indigo-50 rounded-lg">
                 {auraChange > 0 ? '+' : ''}{auraChange}
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <button
                     type="button"
-                    onClick={() => handleAuraIncrement(-100)}
-                    className="w-full py-3 px-4 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    onClick={() => setAuraChange(prev => prev - 100)}
+                    className="w-full py-3 px-4 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
                   >
                     -100
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleAuraIncrement(-10)}
-                    className="w-full py-3 px-4 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    onClick={() => setAuraChange(prev => prev - 10)}
+                    className="w-full py-3 px-4 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
                   >
                     -10
                   </button>
@@ -171,58 +135,62 @@ export default function AdminConsole() {
                 <div className="space-y-4">
                   <button
                     type="button"
-                    onClick={() => handleAuraIncrement(100)}
-                    className="w-full py-3 px-4 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    onClick={() => setAuraChange(prev => prev + 100)}
+                    className="w-full py-3 px-4 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                   >
                     +100
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleAuraIncrement(10)}
-                    className="w-full py-3 px-4 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    onClick={() => setAuraChange(prev => prev + 10)}
+                    className="w-full py-3 px-4 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                   >
                     +10
                   </button>
                 </div>
               </div>
-
               <button
                 type="button"
                 onClick={() => setAuraChange(0)}
-                className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
               >
                 Reset
               </button>
             </div>
 
-            <div>
+            {/* Reason Input - Updated padding and spacing */}
+            <div className="space-y-4 pt-4">
               <label className="block text-sm font-medium text-gray-700">
-                Reason
+                Reason for Change
               </label>
-              <div className="mt-1">
+              <div className="relative rounded-md shadow-sm">
                 <textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   rows={3}
-                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full rounded-md border-gray-300"
+                  className="block w-full px-4 py-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="Why are you changing this user's aura?"
                   required
                 />
               </div>
+              <p className="mt-1 text-sm text-gray-500">
+                Please provide a clear reason for modifying the user's aura.
+              </p>
             </div>
 
-            <div className="flex justify-end space-x-4">
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={updating || !selectedUser || auraChange === 0 || !reason.trim()}
-                className="inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {updating ? (
                   <span className="flex items-center">
