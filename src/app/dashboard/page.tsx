@@ -51,8 +51,7 @@ export default function Dashboard() {
                 <Image
                   src={userProfile.photoURL}
                   alt="Profile"
-                  height={100}
-                  width={100}
+                  fill
                   className="rounded-full object-cover"
                 />
               ) : (
@@ -69,26 +68,23 @@ export default function Dashboard() {
                 {userProfile.displayName || userProfile.username}
               </h2>
               <p className="text-sm text-gray-500">@{userProfile.username}</p>
-              <p className="text-sm text-gray-500">{userProfile.email}</p>
             </div>
           </div>
 
           <div className="mt-6 border-t border-gray-200 pt-6">
-            <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-3">
               <div>
                 <dt className="text-sm font-medium text-gray-500">Account Type</dt>
-                <dd className="mt-1 text-sm text-gray-900">{userProfile.provider}</dd>
+                <dd className="mt-1 text-sm text-gray-900 capitalize">{userProfile.provider || 'Email'}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Email Address</dt>
+                <dd className="mt-1 text-sm text-gray-900">{userProfile.email}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Member Since</dt>
                 <dd className="mt-1 text-sm text-gray-900">
                   {new Date(userProfile.createdAt).toLocaleDateString()}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Last Login</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(userProfile.lastLogin).toLocaleDateString()}
                 </dd>
               </div>
             </dl>

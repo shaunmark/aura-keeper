@@ -219,7 +219,7 @@ export default function Leaderboard() {
 
               return (
                 <Link 
-                  href={`/user/${entry.uid}`}
+                  href={`/users?uid=${entry.uid}`}
                   key={entry.uid}
                   className={`px-4 sm:px-6 py-4 grid grid-cols-12 items-center transition-colors cursor-pointer ${
                     isCurrentUser 
