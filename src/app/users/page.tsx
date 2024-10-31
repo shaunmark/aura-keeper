@@ -1,6 +1,11 @@
-import { auraService } from '@/services/aura.service';
+import { Suspense } from 'react';
 import UserHistory from '@/components/UserHistory';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function UserPage() {
-  return <UserHistory />;
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <UserHistory />
+    </Suspense>
+  );
 } 
