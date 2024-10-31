@@ -20,6 +20,22 @@ A Next.js application with Firebase Authentication and User Management.
 - Set up Project Structure and Configuration
 - Added Tailwind CSS for Styling
 
+### March 20, 2024
+- Added Aura System
+  - Created Aura Collection in Firestore
+  - Implemented Aura Tracking Service
+  - Added Aura History Feature
+- Created Leaderboard
+  - Added Top Users Display with Podium
+  - Implemented Real-time Aura Rankings
+  - Added User Profile Integration
+- Enhanced UI/UX
+  - Set up Tailwind CSS Configuration
+  - Added Custom Component Classes
+  - Implemented Responsive Design
+  - Added Loading States and Animations
+  - Created Clean and Modern Layout
+
 ## Features Implemented
 
 ### Authentication
@@ -35,6 +51,12 @@ A Next.js application with Firebase Authentication and User Management.
 - Profile Data Storage in Firestore
 - Last Login Tracking
 - User Profile Display
+
+### Aura System
+- Aura Points Tracking
+- Aura History
+- Leaderboard Rankings
+- Real-time Updates
 
 ### Technical Implementation
 - Next.js 13+ with App Router

@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
 import { db } from '@/config/firebase';
+import { auraService } from './aura.service';
 
 interface UserProfile {
   uid: string;
@@ -27,6 +28,7 @@ export const userService = {
       };
 
       await setDoc(userRef, userProfile);
+      await auraService.initializeAura(userData.uid);
     } catch (error) {
       console.error('Error creating user profile:', error);
       throw error;

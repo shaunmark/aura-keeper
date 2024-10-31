@@ -6,29 +6,37 @@ import { useEffect, useState } from 'react'
 import { userService } from '@/services/user.service'
 import type { UserProfile } from '@/services/user.service'
 import Image from 'next/image'
+import { auraService } from '@/services/aura.service';
+import type { AuraRecord } from '@/services/aura.service';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { user, loading, auth } = useFirebase()
   const router = useRouter()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
+  const [auraData, setAuraData] = useState<AuraRecord | null>(null);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserData = async () => {
       if (user) {
         try {
-          const profile = await userService.getProfile(user.uid)
-          setUserProfile(profile)
+          const [profile, aura] = await Promise.all([
+            userService.getProfile(user.uid),
+            auraService.getAura(user.uid)
+          ]);
+          setUserProfile(profile);
+          setAuraData(aura);
         } catch (error) {
-          console.error('Error fetching user profile:', error)
+          console.error('Error fetching user data:', error);
         } finally {
-          setLoadingProfile(false)
+          setLoadingProfile(false);
         }
       }
-    }
+    };
 
-    fetchUserProfile()
-  }, [user])
+    fetchUserData();
+  }, [user]);
 
   if (loading || loadingProfile) {
     return <div>Loading...</div>
@@ -105,6 +113,46 @@ export default function Dashboard() {
         <p className="text-sm text-gray-500 mt-4 text-center">
           Session will expire after 1 hour of inactivity
         </p>
+
+        {auraData && (
+          <div className="mt-6 bg-white shadow rounded-lg p-6">
+            <h3 className="text-lg font-medium text-gray-900">Aura Status</h3>
+            <div className="mt-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-gray-500">Current Aura</p>
+                <p className="text-2xl font-bold text-indigo-600">{auraData.aura}</p>
+              </div>
+              <div className="mt-4">
+                <h4 className="text-sm font-medium text-gray-500">Recent History</h4>
+                <div className="mt-2 space-y-2">
+                  {auraData.history.slice(-5).reverse().map((record, index) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <span className="text-gray-500">
+                        {new Date(record.timestamp).toLocaleDateString()}
+                      </span>
+                      <span className={`font-medium ${
+                        record.change > 0 ? 'text-green-600' : 
+                        record.change < 0 ? 'text-red-600' : 'text-gray-600'
+                      }`}>
+                        {record.change > 0 ? '+' : ''}{record.change}
+                      </span>
+                      {record.reason && (
+                        <span className="text-gray-500">{record.reason}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <Link
+          href="/leaderboard"
+          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          View Leaderboard
+        </Link>
       </div>
     </div>
   )
