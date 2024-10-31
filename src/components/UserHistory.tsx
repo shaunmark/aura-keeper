@@ -7,6 +7,7 @@ import { userService } from '@/services/user.service';
 import Link from 'next/link';
 import type { AuraRecord } from '@/services/aura.service';
 import type { UserProfile } from '@/services/user.service';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function UserHistory() {
   const params = useParams();
@@ -38,11 +39,7 @@ export default function UserHistory() {
   }, [params?.uid]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading user history...</div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!user || !auraData) {

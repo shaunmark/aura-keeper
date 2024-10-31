@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useFirebase } from '@/context/FirebaseContext';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/auth.service';
 import { userService } from '@/services/user.service';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function Auth() {
-  const { auth } = useFirebase();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,6 +56,10 @@ export default function Auth() {
       setError('An error occurred after login');
     }
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

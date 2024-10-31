@@ -6,40 +6,34 @@ import { useEffect, useState } from 'react'
 import { userService } from '@/services/user.service'
 import type { UserProfile } from '@/services/user.service'
 import Image from 'next/image'
-import { auraService } from '@/services/aura.service';
-import type { AuraRecord } from '@/services/aura.service';
-import Link from 'next/link';
+import Link from 'next/link'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function Dashboard() {
   const { user, loading, auth } = useFirebase()
   const router = useRouter()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
-  const [auraData, setAuraData] = useState<AuraRecord | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserProfile = async () => {
       if (user) {
         try {
-          const [profile, aura] = await Promise.all([
-            userService.getProfile(user.uid),
-            auraService.getAura(user.uid)
-          ]);
-          setUserProfile(profile);
-          setAuraData(aura);
+          const profile = await userService.getProfile(user.uid)
+          setUserProfile(profile)
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error('Error fetching user profile:', error)
         } finally {
-          setLoadingProfile(false);
+          setLoadingProfile(false)
         }
       }
-    };
+    }
 
-    fetchUserData();
-  }, [user]);
+    fetchUserProfile()
+  }, [user])
 
   if (loading || loadingProfile) {
-    return <div>Loading...</div>
+    return <LoadingSpinner />;
   }
 
   if (!user || !userProfile) {
@@ -50,7 +44,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
           <div className="flex items-center space-x-6">
             <div className="relative h-24 w-24">
               {userProfile.photoURL ? (
@@ -99,60 +93,73 @@ export default function Dashboard() {
               </div>
             </dl>
           </div>
-
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={() => auth.signOut()}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Sign Out
-            </button>
-          </div>
         </div>
 
-        <p className="text-sm text-gray-500 mt-4 text-center">
-          Session will expire after 1 hour of inactivity
-        </p>
-
-        {auraData && (
-          <div className="mt-6 bg-white shadow rounded-lg p-6">
-            <h3 className="text-lg font-medium text-gray-900">Aura Status</h3>
-            <div className="mt-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-gray-500">Current Aura</p>
-                <p className="text-2xl font-bold text-indigo-600">{auraData.aura}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <Link 
+            href="/leaderboard"
+            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200 group"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  View Leaderboard
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Check your ranking and see top performers
+                </p>
               </div>
-              <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-500">Recent History</h4>
-                <div className="mt-2 space-y-2">
-                  {auraData.history.slice(-5).reverse().map((record, index) => (
-                    <div key={index} className="flex justify-between text-sm">
-                      <span className="text-gray-500">
-                        {new Date(record.timestamp).toLocaleDateString()}
-                      </span>
-                      <span className={`font-medium ${
-                        record.change > 0 ? 'text-green-600' : 
-                        record.change < 0 ? 'text-red-600' : 'text-gray-600'
-                      }`}>
-                        {record.change > 0 ? '+' : ''}{record.change}
-                      </span>
-                      {record.reason && (
-                        <span className="text-gray-500">{record.reason}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
+              <div className="text-indigo-600 group-hover:translate-x-1 transition-transform">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-6 w-6" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M13 7l5 5m0 0l-5 5m5-5H6" 
+                  />
+                </svg>
               </div>
             </div>
-          </div>
-        )}
+          </Link>
 
-        <Link
-          href="/leaderboard"
-          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          View Leaderboard
-        </Link>
+          <button
+            onClick={() => auth.signOut()}
+            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200 text-left group"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 group-hover:text-red-600 transition-colors">
+                  Sign Out
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Securely log out of your account
+                </p>
+              </div>
+              <div className="text-red-600">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-6 w-6" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+                  />
+                </svg>
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   )

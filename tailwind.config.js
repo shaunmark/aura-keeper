@@ -7,12 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        // You can add custom colors here
+      screens: {
+        'xs': '475px',
       },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      }
     },
   },
   plugins: [],

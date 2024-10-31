@@ -7,6 +7,7 @@ import { auraService } from '@/services/aura.service';
 import type { UserProfile } from '@/services/user.service';
 import type { AuraWithUser } from '@/services/aura.service';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AdminConsole() {
   const { user } = useFirebase();
@@ -77,11 +78,7 @@ export default function AdminConsole() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading users...</div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
