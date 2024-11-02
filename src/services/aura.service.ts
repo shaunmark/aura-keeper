@@ -7,21 +7,24 @@ import {
   getDocs, 
   query, 
   orderBy,
-  arrayUnion,
-  updateDoc
+  updateDoc,
+  arrayUnion
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { userService } from './user.service';
+
+interface AuraHistoryEntry {
+  timestamp: string;
+  change: number;
+  reason?: string;
+  changedByUid: string;
+}
 
 interface AuraRecord {
   uid: string;
   aura: number;
   lastUpdated: string;
-  history: {
-    timestamp: string;
-    change: number;
-    reason?: string;
-  }[];
+  history: AuraHistoryEntry[];
 }
 
 interface AuraWithUser extends AuraRecord {
@@ -43,7 +46,8 @@ export const auraService = {
         history: [{
           timestamp: new Date().toISOString(),
           change: 0,
-          reason: 'Account Creation'
+          reason: 'Account Creation',
+          changedByUid: ''
         }]
       };
       await setDoc(auraRef, initialAura);
@@ -67,19 +71,18 @@ export const auraService = {
     }
   },
 
-  async updateAura(uid: string, change: number, reason?: string): Promise<void> {
+  async updateAura(uid: string, change: number, reason: string, changedByUid: string): Promise<void> {
     try {
       const auraRef = doc(db, AURA_COLLECTION, uid);
       const now = new Date().toISOString();
 
-      // Create the new history entry
-      const historyEntry = {
+      const historyEntry: AuraHistoryEntry = {
         timestamp: now,
         change,
-        reason
+        reason,
+        changedByUid
       };
 
-      // Update the document with new aura value and append to history
       await updateDoc(auraRef, {
         aura: increment(change),
         lastUpdated: now,

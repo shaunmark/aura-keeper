@@ -121,6 +121,24 @@ A Next.js application with Firebase Authentication and User Management.
     - Improved content structure
     - Enhanced visual hierarchy
 
+### March 24, 2024
+- Added User Notifications System
+  - Created UserNotifications component
+  - Integrated with existing aura history
+  - Added to dashboard layout
+  - Real-time aura update tracking
+  - User attribution for changes
+- Enhanced Aura History
+  - Added user tracking for changes
+  - Improved history display
+  - Better data organization
+  - Enhanced user experience
+- Updated Dashboard Layout
+  - Added notifications section
+  - Improved grid layout
+  - Better mobile responsiveness
+  - Enhanced visual hierarchy
+
 ## Features Implemented
 
 ### Authentication
@@ -193,6 +211,25 @@ A Next.js application with Firebase Authentication and User Management.
 - Visual Hierarchy
 - Mobile Optimization
 
+### Notification Features
+- Aura Change Notifications
+  - Shows who changed the aura
+  - Displays change amount
+  - Includes change reason
+  - Shows timestamps
+  - Color-coded for increases/decreases
+- User Attribution
+  - Tracks who made changes
+  - Shows usernames
+  - Maintains history
+  - Real-time updates
+- Enhanced Display
+  - Sorted by recent first
+  - Clean interface
+  - Mobile responsive
+  - Loading states
+  - Empty state handling
+
 ## Technical Updates
 - New Component Architecture
 - Enhanced State Management
@@ -200,6 +237,19 @@ A Next.js application with Firebase Authentication and User Management.
 - Better Mobile Support
 - Enhanced Accessibility
 - Consistent Styling System
+- Enhanced Data Structure
+  - Added user tracking to aura history
+  - Improved data organization
+- Better State Management
+  - Efficient data fetching
+  - Optimized rendering
+- Improved UI Components
+  - New notification component
+  - Enhanced dashboard layout
+- Performance Optimizations
+  - Batch username fetching
+  - Efficient sorting
+  - Improved rendering
 
 ## Project Structure
 

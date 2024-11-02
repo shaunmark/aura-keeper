@@ -5,7 +5,6 @@ import { Auth, User } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { FirebaseStorage } from 'firebase/storage';
 import { auth, db, storage } from '../config/firebase';
-import { setupAuthTimeout } from '@/utils/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -28,11 +27,10 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setUser(user);
-      setLoading(false);
-
+      
       if (user) {
         const token = await user.getIdToken();
-        document.cookie = `session=${token}; path=/; max-age=${60 * 60}`;
+        document.cookie = `session=${token}; path=/`;
         
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -51,20 +49,21 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
           router.push('/login');
         }
       }
+      
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [pathname, router, db]);
-
-  useEffect(() => {
-    if (user) {
-      const cleanup = setupAuthTimeout();
-      return cleanup;
-    }
-  }, [user]);
+  }, [pathname, router]);
 
   return (
-    <FirebaseContext.Provider value={{ auth, db, storage, user, loading }}>
+    <FirebaseContext.Provider value={{ 
+      auth, 
+      db, 
+      storage, 
+      user, 
+      loading 
+    }}>
       {children}
     </FirebaseContext.Provider>
   );

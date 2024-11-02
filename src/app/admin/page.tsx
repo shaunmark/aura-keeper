@@ -51,16 +51,21 @@ export default function AdminConsole() {
 
   const handleAuraUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUser || auraChange === 0 || !reason.trim()) return;
+    if (!selectedUser || auraChange === 0 || !reason.trim() || !user) return;
     
-    if (selectedUser === user?.uid) {
+    if (selectedUser === user.uid) {
       alert("You cannot modify your own aura!");
       return;
     }
 
     setUpdating(true);
     try {
-      await auraService.updateAura(selectedUser, auraChange, reason);
+      await auraService.updateAura(
+        selectedUser,
+        auraChange,
+        reason,
+        user.uid
+      );
       router.back();
     } catch (error) {
       console.error('Error updating aura:', error);

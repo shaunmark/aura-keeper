@@ -8,6 +8,7 @@ import type { UserProfile } from '@/services/user.service'
 import Image from 'next/image'
 import Link from 'next/link'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import UserNotifications from '@/components/UserNotifications'
 
 export default function Dashboard() {
   const { user, loading, auth } = useFirebase()
@@ -57,7 +58,7 @@ export default function Dashboard() {
               ) : (
                 <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
                   <span className="text-2xl text-gray-500">
-                    {userProfile.username.charAt(0).toUpperCase()}
+                    {userProfile?.username?.charAt(0).toUpperCase()}
                   </span>
                 </div>
               )}
@@ -155,6 +156,10 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
+
+          <div className="md:col-span-2">
+            <UserNotifications />
+          </div>
         </div>
       </div>
     </div>

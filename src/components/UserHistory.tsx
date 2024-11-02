@@ -15,6 +15,7 @@ export default function UserHistory() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [auraData, setAuraData] = useState<AuraRecord | null>(null);
+  const [changedByUsers, setChangedByUsers] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,6 +43,23 @@ export default function UserHistory() {
 
     fetchUserData();
   }, [searchParams, router]);
+
+  useEffect(() => {
+    const fetchChangedByUsers = async () => {
+      if (auraData) {
+        const uniqueUserIds = Array.from(new Set(auraData.history.map(h => h.changedByUid)));
+        const users = await Promise.all(
+          uniqueUserIds.map(async (uid) => {
+            const user = await userService.getProfile(uid);
+            return [uid, user?.username || 'Unknown User'];
+          })
+        );
+        setChangedByUsers(Object.fromEntries(users));
+      }
+    };
+
+    fetchChangedByUsers();
+  }, [auraData]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -94,7 +112,10 @@ export default function UserHistory() {
                     <p className="text-sm font-medium text-gray-900">
                       {record.reason || 'Aura Change'}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500">
+                    <p className="text-xs text-gray-500">
+                      Changed by {changedByUsers[record.changedByUid]}
+                    </p>
+                    <p className="text-xs text-gray-500">
                       {new Date(record.timestamp).toLocaleString()}
                     </p>
                   </div>
