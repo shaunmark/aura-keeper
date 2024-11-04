@@ -139,6 +139,30 @@ A Next.js application with Firebase Authentication and User Management.
   - Better mobile responsiveness
   - Enhanced visual hierarchy
 
+### March 25, 2024
+- Added Daily Aura Limit System
+  - Implemented daily aura point allocation limit (1000 points per day)
+  - Added automatic daily reset of aura points
+  - Created visual indicator for remaining daily aura
+  - Added upgrade option for increased daily limits
+- Added Premium Plans System
+  - Created plans page with different tier options
+  - Basic plan: 1000 daily aura points
+  - Pro plan: 5000 daily aura points
+  - Enterprise plan: 15000 daily aura points
+  - Added "Coming Soon" placeholder for plan upgrades
+- Enhanced User Management
+  - Added user disable/enable functionality
+  - Disabled users are hidden from leaderboard
+  - Auto-enable on user login
+  - Added account deactivation option in dashboard
+- UI/UX Improvements
+  - Made leaderboard button more prominent
+  - Added progress bar for daily aura usage
+  - Added back navigation in plans page
+  - Enhanced mobile responsiveness
+  - Added upgrade prompts for aura limits
+
 ## Features Implemented
 
 ### Authentication

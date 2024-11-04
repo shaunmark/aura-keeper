@@ -73,6 +73,11 @@ export const auraService = {
 
   async updateAura(uid: string, change: number, reason: string, changedByUid: string): Promise<void> {
     try {
+      const canSpend = await userService.canSpendAura(changedByUid, Math.abs(change));
+      if (!canSpend) {
+        throw new Error('Daily aura limit exceeded');
+      }
+
       const auraRef = doc(db, AURA_COLLECTION, uid);
       const now = new Date().toISOString();
 
@@ -88,6 +93,8 @@ export const auraService = {
         lastUpdated: now,
         history: arrayUnion(historyEntry)
       });
+
+      await userService.updateDailyAuraSpent(changedByUid, Math.abs(change));
     } catch (error) {
       console.error('Error updating aura:', error);
       throw error;
@@ -106,11 +113,13 @@ export const auraService = {
         auraData.map(aura => userService.getProfile(aura.uid))
       );
       
-      // Combine aura data with usernames
-      const combinedData: AuraWithUser[] = auraData.map((aura, index) => ({
-        ...aura,
-        username: userProfiles[index]?.username || 'Unknown User'
-      }));
+      // Combine aura data with usernames and filter out disabled users
+      const combinedData: AuraWithUser[] = auraData
+        .map((aura, index) => ({
+          ...aura,
+          username: userProfiles[index]?.username || 'Unknown User'
+        }))
+        .filter((_, index) => !userProfiles[index]?.disabled); // Filter out disabled users
       
       return combinedData;
     } catch (error) {

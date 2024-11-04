@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 export default function AdminButton() {
   const pathname = usePathname();
   
-  // Don't show on admin page or login page
-  if (pathname === '/admin' || pathname === '/login') {
+  // Don't show on admin page, login page, or plans page
+  if (pathname === '/admin' || pathname === '/login' || pathname === '/plans') {
     return null;
   }
 

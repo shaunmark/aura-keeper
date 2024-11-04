@@ -9,6 +9,8 @@ import type { AuraWithUser } from '@/services/aura.service';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Autocomplete from '@/components/Autocomplete';
+import { DAILY_AURA_LIMIT } from '@/services/user.service';
+import Popup from '@/components/Popup';
 
 export default function AdminConsole() {
   const { user } = useFirebase();
@@ -20,6 +22,20 @@ export default function AdminConsole() {
   const [reason, setReason] = useState<string>('');
   const [updating, setUpdating] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [remainingAura, setRemainingAura] = useState<number>(DAILY_AURA_LIMIT);
+  const [popup, setPopup] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+    showConfirm?: boolean;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info',
+  });
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -43,6 +59,25 @@ export default function AdminConsole() {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const fetchRemainingAura = async () => {
+      if (!user) return;
+      
+      try {
+        const profile = await userService.getProfile(user.uid);
+        if (profile) {
+          const spent = profile.dailyAuraSpent || 0;
+          const limit = profile.dailyAuraLimit || DAILY_AURA_LIMIT;
+          setRemainingAura(limit - spent);
+        }
+      } catch (error) {
+        console.error('Error fetching remaining aura:', error);
+      }
+    };
+
+    fetchRemainingAura();
+  }, [user]);
+
   const filteredUsers = useMemo(() => {
     return users.filter(user => 
       user.username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -54,7 +89,26 @@ export default function AdminConsole() {
     if (!selectedUser || auraChange === 0 || !reason.trim() || !user) return;
     
     if (selectedUser === user.uid) {
-      alert("You cannot modify your own aura!");
+      setPopup({
+        isOpen: true,
+        title: 'Invalid Action',
+        message: "You cannot modify your own aura!",
+        type: 'error'
+      });
+      return;
+    }
+
+    if (Math.abs(auraChange) > remainingAura) {
+      setPopup({
+        isOpen: true,
+        title: 'Upgrade Your Plan',
+        message: "You've reached your daily aura limit! Upgrade your plan to get more daily aura points.",
+        type: 'warning',
+        showConfirm: true,
+        onConfirm: () => {
+          router.push('/plans');
+        }
+      });
       return;
     }
 
@@ -66,10 +120,29 @@ export default function AdminConsole() {
         reason,
         user.uid
       );
+      setRemainingAura(prev => prev - Math.abs(auraChange));
       router.back();
     } catch (error) {
       console.error('Error updating aura:', error);
-      alert('Failed to update aura');
+      if (error instanceof Error && error.message === 'Daily aura limit exceeded') {
+        setPopup({
+          isOpen: true,
+          title: 'Upgrade Your Plan',
+          message: "You've reached your daily aura limit! Upgrade your plan to get more daily aura points.",
+          type: 'warning',
+          showConfirm: true,
+          onConfirm: () => {
+            router.push('/plans');
+          }
+        });
+      } else {
+        setPopup({
+          isOpen: true,
+          title: 'Update Failed',
+          message: 'Failed to update aura. Please try again.',
+          type: 'error'
+        });
+      }
       setUpdating(false);
     }
   };
@@ -163,6 +236,19 @@ export default function AdminConsole() {
               </button>
             </div>
 
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">Daily Aura Remaining:</span>
+                <span className="text-lg font-bold text-indigo-600">{remainingAura}</span>
+              </div>
+              <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-indigo-600 transition-all duration-300"
+                  style={{ width: `${(remainingAura / DAILY_AURA_LIMIT) * 100}%` }}
+                />
+              </div>
+            </div>
+
             {/* Reason Input - Updated padding and spacing */}
             <div className="space-y-4 pt-4">
               <label className="block text-sm font-medium text-gray-700">
@@ -213,6 +299,16 @@ export default function AdminConsole() {
           </form>
         </div>
       </div>
+
+      <Popup
+        isOpen={popup.isOpen}
+        title={popup.title}
+        message={popup.message}
+        type={popup.type}
+        onClose={() => setPopup(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={popup.onConfirm}
+        showConfirm={popup.showConfirm}
+      />
     </div>
   );
 } 
