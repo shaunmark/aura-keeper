@@ -6,6 +6,7 @@ import type { AuraWithUser } from '@/services/aura.service';
 import Link from 'next/link';
 import { useFirebase } from '@/context/FirebaseContext';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useRouter } from 'next/navigation';
 
 export default function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<AuraWithUser[]>([]);
@@ -14,6 +15,7 @@ export default function Leaderboard() {
   const [userRank, setUserRank] = useState<number | null>(null);
   const [userAura, setUserAura] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -62,6 +64,10 @@ export default function Leaderboard() {
       .slice(0, 3)
       .map(user => user.uid);
   }, [leaderboardData]);
+
+  const handleUserClick = (uid: string) => {
+    router.push(`/users?uid=${uid}`);
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -212,15 +218,15 @@ export default function Leaderboard() {
 
           {/* List Items */}
           <div className="divide-y divide-gray-100">
-            {sortedLeaderboardData.map((entry) => {
+            {sortedLeaderboardData.map((entry, index) => {
               const isCurrentUser = entry.uid === user?.uid;
               const rank = rankMap.get(entry.uid) || 0;
               const isTopThree = rank <= 3;
 
               return (
-                <Link 
-                  href={`/users?uid=${entry.uid}`}
+                <div 
                   key={entry.uid}
+                  onClick={() => handleUserClick(entry.uid)}
                   className={`px-4 sm:px-6 py-4 grid grid-cols-12 items-center transition-colors cursor-pointer ${
                     isCurrentUser 
                       ? 'bg-indigo-50 hover:bg-indigo-100' 
@@ -267,7 +273,7 @@ export default function Leaderboard() {
                       {entry.aura}
                     </span>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
