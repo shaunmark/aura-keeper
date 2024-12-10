@@ -1,286 +1,70 @@
-# Aura Keeper
+# Aura - Community Reputation System
 
-A Next.js application with Firebase Authentication and User Management.
+Aura is a social reputation system where users can recognize and appreciate each other's positive contributions within the community.
 
-## Development Log
+## Recent Updates
 
-### March 19, 2024
-- Initialized Next.js 13+ project with App Router
-- Set up Firebase Authentication
-  - Implemented Google Sign-in
-  - Added Email/Password Authentication
-  - Created Session Management with 1-hour timeout
-- Implemented User Management
-  - Created User Profile System
-  - Added Username Setup Flow
-  - Set up Firestore Database Integration
-  - Added Profile Display in Dashboard
-- Added Protected Routes using Middleware
-- Implemented Service Layer Architecture
-- Set up Project Structure and Configuration
-- Added Tailwind CSS for Styling
+### User Guide Feature
+- Added an interactive user guide to help new users understand the system
+- Guide automatically appears for new users and reactivated accounts
+- Users can access the guide anytime from their dashboard
+- Step-by-step walkthrough of all major features
+- Progress tracking and intuitive navigation
 
-### March 20, 2024
-- Added Aura System
-  - Created Aura Collection in Firestore
-  - Implemented Aura Tracking Service
-  - Added Aura History Feature
-- Created Leaderboard
-  - Added Top Users Display with Podium
-  - Implemented Real-time Aura Rankings
-  - Added User Profile Integration
-- Enhanced UI/UX
-  - Set up Tailwind CSS Configuration
-  - Added Custom Component Classes
-  - Implemented Responsive Design
-  - Added Loading States and Animations
-  - Created Clean and Modern Layout
+### Authentication Flow Improvements
+- Streamlined login process with automatic redirection to dashboard
+- Enhanced user onboarding experience
+- Improved handling of new user registration
+- Better session management and state persistence
 
-### March 21, 2024
-- Enhanced Admin Console
-  - Added User Search Functionality
-  - Implemented Aura Increment/Decrement Buttons (-100, -10, +10, +100)
-  - Added Confirm/Cancel Navigation
-  - Improved UX for Aura Management
-- Added User History Page
-  - Created Detailed User Profile View
-  - Added Aura Transaction History
-  - Implemented Static Generation for User Routes
-- Updated Firebase Deployment
-  - Configured Static Exports
-  - Updated Build Scripts
-  - Added Production Optimizations
-- Added Floating Admin Button
-  - Quick Access to Admin Console
-  - Context-aware Display
-  - Improved Navigation Flow
-- Fixed Aura Transaction History
-  - Implemented Proper History Storage
-  - Added Transaction Timestamps
-  - Preserved All Transaction Records
+### UI/UX Enhancements
+- Added new UI components using shadcn/ui
+- Implemented modern dialog system for modals
+- Enhanced button styling and interactions
+- Improved responsive design across all pages
+- Added loading states and transitions
 
-### March 22, 2024
-- Enhanced Leaderboard UI/UX
-  - Added consistent ranking system
-  - Improved mobile responsiveness
-  - Added sorting functionality for aura scores
-  - Enhanced user row interactions
-  - Added custom xs breakpoint for better mobile display
-  - Fixed layout issues on smaller screens
-  - Improved visual hierarchy
-- Updated Navigation
-  - Added clickable user rows
-  - Improved user profile navigation
-  - Enhanced visual feedback for interactions
-- Fixed Ranking System
-  - Implemented consistent ranking based on aura scores
-  - Added proper rank badges for top 3
-  - Maintained rank consistency during sorting
-  - Improved rank display on mobile
-- Added Responsive Design
-  - Enhanced mobile layout
-  - Improved text truncation
-  - Added responsive spacing
-  - Optimized for different screen sizes
-  - Better handling of long usernames
+### Dashboard Updates
+- Redesigned dashboard layout with better organization
+- Added quick access guide section
+- Improved profile information display
+- Enhanced visual hierarchy and navigation
+- Added daily aura limit tracking
 
-### March 23, 2024
-- Enhanced Admin Console
-  - Added Autocomplete Component
-    - Keyboard navigation support
-    - Smart text selection behavior
-    - Search functionality
-    - Improved user selection UX
-    - Better mobile responsiveness
-  - Improved User Search
-    - Real-time filtering
-    - Better visual feedback
-    - Enhanced accessibility
-  - Updated Layout
-    - Better padding and spacing
-    - Improved form organization
-    - Enhanced visual hierarchy
-    - Added helper text
-    - Consistent styling
+## Features
 
-- Updated User Profile Page
-  - Changed to query parameter routing
-  - Enhanced mobile responsiveness
-  - Improved layout structure
-  - Better content organization
-  - Fixed styling issues
+### Core Functionality
+- Community-driven reputation system
+- Real-time aura score tracking
+- User profiles and statistics
+- Interactive leaderboard
+- Daily aura allocation limits
 
-- Added New Components
-  - Autocomplete Component
-    - Reusable search component
-    - Keyboard navigation
-    - Smart text handling
-    - Accessibility support
-  - UserHistory Component
-    - Better mobile layout
-    - Improved content structure
-    - Enhanced visual hierarchy
-
-### March 24, 2024
-- Added User Notifications System
-  - Created UserNotifications component
-  - Integrated with existing aura history
-  - Added to dashboard layout
-  - Real-time aura update tracking
-  - User attribution for changes
-- Enhanced Aura History
-  - Added user tracking for changes
-  - Improved history display
-  - Better data organization
-  - Enhanced user experience
-- Updated Dashboard Layout
-  - Added notifications section
-  - Improved grid layout
-  - Better mobile responsiveness
-  - Enhanced visual hierarchy
-
-### March 25, 2024
-- Added Daily Aura Limit System
-  - Implemented daily aura point allocation limit (1000 points per day)
-  - Added automatic daily reset of aura points
-  - Created visual indicator for remaining daily aura
-  - Added upgrade option for increased daily limits
-- Added Premium Plans System
-  - Created plans page with different tier options
-  - Basic plan: 1000 daily aura points
-  - Pro plan: 5000 daily aura points
-  - Enterprise plan: 15000 daily aura points
-  - Added "Coming Soon" placeholder for plan upgrades
-- Enhanced User Management
-  - Added user disable/enable functionality
-  - Disabled users are hidden from leaderboard
-  - Auto-enable on user login
-  - Added account deactivation option in dashboard
-- UI/UX Improvements
-  - Made leaderboard button more prominent
-  - Added progress bar for daily aura usage
-  - Added back navigation in plans page
-  - Enhanced mobile responsiveness
-  - Added upgrade prompts for aura limits
-
-## Features Implemented
-
-### Authentication
-- Google Sign-in Integration
-- Email/Password Authentication
-- Session Management with 1-hour timeout
-- Protected Routes using Middleware
-- Authentication State Persistence
-
-### User Management
-- User Profile Creation
-- Username Setup Flow for First-time Users
-- Profile Data Storage in Firestore
-- Last Login Tracking
-- User Profile Display
-
-### Aura System
-- Aura Points Tracking
-- Aura History with Timestamps
-- Leaderboard Rankings
-- Real-time Updates
-- Transaction History
-- Admin Management Console
-
-### Leaderboard Features
-- Real-time aura rankings
-- Consistent ranking system
-- Sortable user list
-- Interactive user rows
-- Mobile-optimized layout
-- Visual rank indicators
-- Top 3 recognition badges
-- User profile navigation
+### User Experience
+- Intuitive onboarding process
+- Interactive user guide
 - Responsive design
-- Sort by aura score
-- Current user highlighting
+- Real-time updates
+- Smooth animations and transitions
 
-### Technical Implementation
-- Next.js 13+ with App Router
+### Technical Features
+- Next.js 13 with App Router
 - Firebase Authentication
-- Firestore Database
-- TypeScript
-- Tailwind CSS for Styling
-- Custom Hooks and Context
-- Service Layer Architecture
-- Static Site Generation
-- Production Optimizations
+- Real-time Database
+- TypeScript support
+- Tailwind CSS styling
 
-### Admin Features
-- Advanced User Search
-  - Autocomplete functionality
-  - Keyboard navigation
-  - Smart text selection
-  - Real-time filtering
-- Aura Management
-  - Intuitive controls
-  - Clear visual feedback
-  - Detailed history tracking
-  - Reason documentation
-- Enhanced UX
-  - Better form organization
-  - Improved accessibility
-  - Consistent styling
-  - Mobile optimization
+## Getting Started
 
-### User Profile Features
-- Query Parameter Routing
-- Responsive Design
-- Transaction History
-- Visual Hierarchy
-- Mobile Optimization
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables
+4. Run development server: `npm run dev`
 
-### Notification Features
-- Aura Change Notifications
-  - Shows who changed the aura
-  - Displays change amount
-  - Includes change reason
-  - Shows timestamps
-  - Color-coded for increases/decreases
-- User Attribution
-  - Tracks who made changes
-  - Shows usernames
-  - Maintains history
-  - Real-time updates
-- Enhanced Display
-  - Sorted by recent first
-  - Clean interface
-  - Mobile responsive
-  - Loading states
-  - Empty state handling
+## Contributing
 
-## Technical Updates
-- New Component Architecture
-- Enhanced State Management
-- Improved Routing Strategy
-- Better Mobile Support
-- Enhanced Accessibility
-- Consistent Styling System
-- Enhanced Data Structure
-  - Added user tracking to aura history
-  - Improved data organization
-- Better State Management
-  - Efficient data fetching
-  - Optimized rendering
-- Improved UI Components
-  - New notification component
-  - Enhanced dashboard layout
-- Performance Optimizations
-  - Batch username fetching
-  - Efficient sorting
-  - Improved rendering
+We welcome contributions! Please see our contributing guidelines for more details.
 
-## Project Structure
+## License
 
-## Technical Updates
-- Added custom Tailwind breakpoint (xs: 475px)
-- Enhanced mobile-first design
-- Improved component architecture
-- Better state management
-- Optimized sorting algorithms
-- Enhanced user interactions
+This project is licensed under the MIT License - see the LICENSE file for details.

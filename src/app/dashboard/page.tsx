@@ -10,6 +10,8 @@ import Link from 'next/link'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import UserNotifications from '@/components/UserNotifications'
 import Popup from '@/components/Popup'
+import UserGuide from "@/components/UserGuide";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { user, loading, auth } = useFirebase()
@@ -30,6 +32,7 @@ export default function Dashboard() {
     message: '',
     type: 'info',
   });
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -40,6 +43,10 @@ export default function Dashboard() {
             await userService.enableUser(user.uid)
             const updatedProfile = await userService.getProfile(user.uid)
             setUserProfile(updatedProfile)
+            setShowGuide(true)
+          } else if (!profile) {
+            setShowGuide(true)
+            setUserProfile(profile)
           } else {
             setUserProfile(profile)
           }
@@ -156,6 +163,44 @@ export default function Dashboard() {
                 </dd>
               </div>
             </dl>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg p-1 mb-6">
+          <div className="bg-white rounded-lg p-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  New to Aura? 🌟
+                </h3>
+                <p className="text-gray-600">
+                  Learn how to use Aura's features and start building your reputation in the community.
+                </p>
+              </div>
+              <Button
+                variant="default"
+                onClick={() => setShowGuide(true)}
+                className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white shadow-md hover:shadow-xl transition-all duration-300 border-0 py-6 sm:py-4"
+              >
+                <div className="flex items-center justify-center space-x-3">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="h-6 w-6" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-lg font-medium">Start Quick Guide</span>
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -333,6 +378,11 @@ export default function Dashboard() {
         onClose={() => setPopup(prev => ({ ...prev, isOpen: false }))}
         onConfirm={popup.onConfirm}
         showConfirm={popup.showConfirm}
+      />
+
+      <UserGuide 
+        isOpen={showGuide} 
+        onClose={() => setShowGuide(false)} 
       />
     </div>
   )
